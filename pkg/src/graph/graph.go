@@ -217,8 +217,44 @@ func (g Graph) Parents(of Node) []Node {
 // TopologicalSort returns a linear ordering of the graph's nodes; guaranteeing that for
 // every edge u -> v, u comes before v in the ordering.
 func (g Graph) TopologicalSort() ([]Node, error) {
-	//* You may wish to implement this!
-	panic("not implemented")
+	sortedNodes := []Node{}
+	inDegree := map[Node]int{}
+
+	for n := range g.adjacenyList {
+		inDegree[n] = 0
+	}
+
+	for _, adjacent := range g.adjacenyList {
+		for _, v := range adjacent {
+			inDegree[v]++
+		}
+	}
+
+	// topest level / entry nodes
+
+	next := []Node{}
+	for u, v := range inDegree {
+		if v == 0 {
+			next = append(next, u)
+		}
+	}
+
+	for len(next) > 0 {
+		u := next[0]
+		next = next[1:]
+
+		sortedNodes = append(sortedNodes, u)
+
+		for _, v := range g.adjacenyList[u] {
+			inDegree[v]--
+			// v becomes next topest
+			if inDegree[v] == 0 {
+				next = append(next, v)
+			}
+		}
+	}
+
+	return sortedNodes, nil
 }
 
 //* You may implement more methods for Graph!
